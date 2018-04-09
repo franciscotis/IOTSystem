@@ -1,6 +1,6 @@
 #require 'green_shoes'
+require 'socket'
 require 'csv'
-require '../client/client'
 #encoding: ISO-8859-1
 class Login < Shoes::Widget
   def initialize(servidor)
@@ -8,7 +8,9 @@ class Login < Shoes::Widget
   end
 
   def enviaDados(tipo,email,senha)
-    @dados = [tipo,email,senha]
+
+    @ip = (Socket.ip_address_list)[1].ip_address
+    @dados = [tipo,ip,email,senha]
     @server.puts(@dados)
     @server.close
   end
@@ -19,8 +21,10 @@ class Login < Shoes::Widget
         msg = @server.gets
       }
     end
+    return msg
   end
 end
+
 Shoes.app title: "Login" do
   server = TCPSocket.open("192.168.0.11",3001)
   @fazlogin = Login.new server
@@ -42,6 +46,7 @@ Shoes.app title: "Login" do
     @fazlogin.enviaDados "Login",email,senha
     if @fazlogin.recebeDados==0
       alert("Login realizado com sucesso!")
+      require '../client/client'
       Client.new row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7],row[8]
       close
     else
@@ -55,3 +60,4 @@ Shoes.app title: "Login" do
     close
   end
 end
+

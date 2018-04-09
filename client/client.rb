@@ -1,9 +1,9 @@
 require 'socket'
-require 'green_shoes'
+#require 'green_shoes'
 #encoding: ISO-8859-1
 class Client < Shoes::Widget
-  attr_reader :email, :nome, :cpf, :rg, :endereco, :cidade, :uf, :pais, :telefone, :celular, :cep
-  def initialize(nome,email,senha,cpf,endereco,casa,cidade,telefone,cep)
+  attr_accessor :email, :nome, :cpf, :rg, :endereco, :cidade, :uf, :pais, :telefone, :celular, :cep
+  def initialize(servidor,nome=nil,email=nil,senha=nil,cpf=nil,endereco=nil,casa=nil,cidade=nil,telefone=nil,cep=nil)
     @email = email
     @nome = nome
     @cpf = cpf
@@ -12,9 +12,10 @@ class Client < Shoes::Widget
     @telefone = telefone
     @cep = cep
     @casa = casa
+    @servidor = servidor
 
   end
-
+=begin
     def conexao(hostname, port)
       server = TCPSocket.open(hostname,port)
       server.puts 4
@@ -23,12 +24,32 @@ class Client < Shoes::Widget
       puts resp[0]
       server.close
     end
+=end
+
+  def recebeDados
+    @response = Thread.new do
+      arr = Array.new
+       while msg = @server.gets
+         arr << msg
+       end
+    end
+    @nome=arr[0],@email=arr[1],@senha=arr[2],@cpf=arr[3],@endereco=arr[4],@cidade=arr[5],@telefone=arr[6],@cep=arr[7],@casa=arr[8]
+  end
+
+  def enviaDados
+    @ip = (Socket.ip_address_list)[1].ip_address
+    @dados = ["Cliente",@ip]
+    @server.puts(@dados)
+    recebeDados
+    @server.close
+  end
 
 
 end
-
 Shoes.app title: "Meu App de Agua" do
-  #criar def para capturar dados do cliente
+  server = TCPSocket.open("192.168.0.11",3001)
+  @client = Client.new server
+  @client.enviaDados
   stack do
     para "Meu Consumo"
     flow do
@@ -50,7 +71,7 @@ Shoes.app title: "Meu App de Agua" do
     end
     para "Meus Dados"
     flow do
-      inscription "E-mail cadastrado #{email}\nNome do cliente #{nome}\nCPF do cliente #{cpf}\nEndereco do cliente #{endereco}\nCidade do cliente #{cidade}\nTelefone do cliente #{telefone}\nCep do cliente #{cep}\nNumero da casa #{casa}"
+     # inscription "E-mail cadastrado #{email}\nNome do cliente #{nome}\nCPF do cliente #{cpf}\nEndereco do cliente #{endereco}\nCidade do cliente #{cidade}\nTelefone do cliente #{telefone}\nCep do cliente #{cep}\nNumero da casa #{casa}"
     end
 
   end
