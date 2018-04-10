@@ -31,7 +31,7 @@ class Login < Shoes::Widget
 end
 
 Shoes.app title: "Login" do
-  server = TCPSocket.open("192.168.137.155",3001)
+  server = TCPSocket.open("192.168.25.5",3001)
   @fazlogin = Login.new server
   stack(left:35, top:90) do
     para "E-mail"
@@ -68,5 +68,6 @@ Shoes.app title: "Login" do
     require 'cadastro'
     close
   end
+
 end
 

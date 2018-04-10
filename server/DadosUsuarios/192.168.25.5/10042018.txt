@@ -1,0 +1,33 @@
+Consumo >> 0 | Hora >> 10/04/2018 12:57:57 
+Consumo >> 0 | Hora >> 10/04/2018 12:57:59 
+Consumo >> 0 | Hora >> 10/04/2018 12:58:00 
+Consumo >> 0 | Hora >> 10/04/2018 12:58:01 
+Consumo >> 0 | Hora >> 10/04/2018 12:58:02 
+Consumo >> 0 | Hora >> 10/04/2018 12:58:03 
+Consumo >> 0 | Hora >> 10/04/2018 12:58:04 
+Consumo >> 0 | Hora >> 10/04/2018 12:58:05 
+Consumo >> 0 | Hora >> 10/04/2018 12:58:06 
+Consumo >> 4 m³/s || Hora >> 10/04/2018 13:01:03 
+Consumo >> 4 m³/s || Hora >> 10/04/2018 13:01:04 
+Consumo >> 4 m³/s || Hora >> 10/04/2018 13:01:06 
+Consumo >> 4 m³/s || Hora >> 10/04/2018 13:01:07 
+Consumo >> 4 m³/s || Hora >> 10/04/2018 13:01:08 
+Consumo >> 4 m³/s || Hora >> 10/04/2018 13:01:09 
+Consumo >> 4 m³/s || Hora >> 10/04/2018 13:01:10 
+Consumo >> 4 m³/s || Hora >> 10/04/2018 13:01:11 
+Consumo >> 4 m³/s || Hora >> 10/04/2018 13:01:12 
+Consumo >> 4 m³/s || Hora >> 10/04/2018 13:01:13 
+Consumo >> 4 m³/s || Hora >> 10/04/2018 13:01:14 
+Consumo >> 4 m³/s || Hora >> 10/04/2018 13:01:15 
+Consumo >> 4 m³/s || Hora >> 10/04/2018 13:01:16 
+Consumo >> 4 m³/s || Hora >> 10/04/2018 13:01:17 
+Consumo >> 4 m³/s || Hora >> 10/04/2018 13:01:18 
+Consumo >> 4 m³/s || Hora >> 10/04/2018 13:01:19 
+Consumo >> 4 m³/s || Hora >> 10/04/2018 13:01:21 
+Consumo >> 4 m³/s || Hora >> 10/04/2018 13:01:22 
+Consumo >> 4 m³/s || Hora >> 10/04/2018 13:01:23 
+Consumo >> 4 m³/s || Hora >> 10/04/2018 13:01:24 
+Consumo >> 4 m³/s || Hora >> 10/04/2018 13:01:25 
+Consumo >> 4 m³/s || Hora >> 10/04/2018 13:01:26 
+Consumo >> 4 m³/s || Hora >> 10/04/2018 13:01:27 
+Consumo >> 4 m³/s || Hora >> 10/04/2018 13:01:28 

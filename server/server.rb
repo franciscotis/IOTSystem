@@ -1,5 +1,6 @@
 require 'socket'
 require 'csv'
+require 'fileutils'
 class Server
 
 def initialize(porta,ip)
@@ -9,26 +10,29 @@ def initialize(porta,ip)
   @clientes = Hash.new
   @udp = UDPSocket.new
   @udp.bind(ip,porta)
-
   run
 end
 
 
 def run
 loop{
+  Thread.new do
   loop {
   data,client = @udp.recvfrom(1024)
   Thread.new(client) do |clientAddress|
-    puts "Sensor ativo"
-    printaSensor(data)
+    dados = data.split(',')
+    printaSensor(dados[0],dados[1])
   end
   }
+  end
+
 
 
   Thread.start(@servidor.accept) do |client|
     tipoOperacao = client.gets.chomp.to_sym
     puts tipoOperacao
     if tipoOperacao == :Cadastro
+      puts 'entrei'
       cadastro client
     elsif tipoOperacao == :Login
       login client
@@ -44,8 +48,17 @@ loop{
 
 end
 
-def printaSensor(data)
-  puts data
+def printaSensor(nome,data)
+  time = Time.now.to_s
+  time = DateTime.parse(time).strftime("%d-%m-%Y")
+  datahora = Time.now.to_s
+  datahora = DateTime.parse(datahora).strftime("%d/%m/%Y %H:%M:%S")
+  datah = DateTime.parse(datahora).strftime("%d%m%Y")
+  FileUtils.mkdir_p "DadosUsuarios"
+  FileUtils.mkdir_p "DadosUsuarios/#{nome.to_s}"
+  File.open("../server/DadosUsuarios/#{nome.to_s}/#{datah.to_s}.txt","a") do |line|
+    line.puts "Consumo >> #{data.to_s} m³/s || Hora >> #{datahora.to_s} "
+  end
 end
 
 def armazena(name,em,pass,cp,ende,cas,cid,tel,ce)
@@ -56,9 +69,12 @@ end
 
 
 def listen_user_messages(client)
-  while line = client.gets.chomp
+  arr = Array.new
+  a = 0
+  while line = client.gets
     arr << line
   end
+  return arr
 end
 
 def loginCliente client
@@ -109,4 +125,4 @@ end
 end
 
 
-Server.new(3001,"192.168.0.120")
+Server.new(3001,"192.168.25.5")

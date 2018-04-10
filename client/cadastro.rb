@@ -10,9 +10,11 @@ class Cadastro
   end
 
   def enviaDados
-    @server.puts(dados)
-    @server.close
+        @server.puts(@dados)
+        @server.close
   end
+
+
 end
 
 
@@ -58,11 +60,12 @@ Shoes.app title: "Cadastro"  do
     end
   end
   button "Cadastre-se" do
-    if @nome.text != nil || @email.text != nil || @senha.text != nil|| @cpf.text!= nil|| @endereco.text != nil || @casa.text != nil || @cidade.text != nil || @telefone.text != nil || @cep.text != nil
+    if @nome.text != "" || @email.text != "" || @senha.text != ""|| @cpf.text!= ""|| @endereco.text != "" || @casa.text != "" || @cidade.text != "" || @telefone.text != "" || @cep.text != ""
       nombre,em,pass,cp,ende,cas,cid,tel,ce = @nome.text,@email.text,@senha.text,@cpf.text,@ender.text,@casa.text,@cidade.text,@telefone.text,@cep.text
-      server = TCPSocket.open("localhost",3001)
+      server = TCPSocket.open("192.168.25.5",3001)
       @cadastro = Cadastro.new server,'Cadastro',nombre,em,pass,cp,ende,cas,cid,tel,ce
       @cadastro.enviaDados
+      @cadastrou =
       alert"Cadastro realizado com sucesso!"
       require 'login'
       close
