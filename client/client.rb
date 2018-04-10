@@ -47,7 +47,7 @@ class Client < Shoes::Widget
 
 end
 Shoes.app title: "Meu App de Agua" do
-  server = TCPSocket.open("192.168.0.11",3001)
+  server = TCPSocket.open("192.168.137.155",3001)
   @client = Client.new server
   @client.enviaDados
   stack do

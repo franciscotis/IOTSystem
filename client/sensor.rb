@@ -2,15 +2,16 @@ require 'socket'
 #require 'green_shoes'
 #encoding: ISO-8859-1
 class Sensor
-  attr_accessor :vazaoAgua, :idCliente
+  attr_accessor :vazaoAgua, :tempo
   def initialize
     @vazaoAgua = 0
+    @tempo = 1
+    @ds = UDPSocket.new
   end
 
-  def enviaDados(hostname,porta)
-    server = TCPSocket.open(hostname,port)
-    server.puts vazaoAgua, idCliente
-    server.close
+  def enviaDados()
+      @ds.send(vazaoAgua.to_s,0,"192.168.0.120",3001)
+      sleep tempo
   end
 
 
@@ -18,6 +19,11 @@ end
 
 Shoes.app do
   @sensor = Sensor.new
+  Thread.new do
+    loop {
+    @sensor.enviaDados
+    }
+  end
   title "SENSOR", :align=>'center'
   flow(:margin_left => '50%', :left => '-25%', :margin_top => '20%') do
 
@@ -52,8 +58,10 @@ Shoes.app do
       @fivesec = radio; para strong("5s")
       @tensec = radio; para strong("10s")
     }
-  end
 
+
+
+  end
 
 
 

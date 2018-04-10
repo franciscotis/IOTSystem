@@ -1,25 +1,21 @@
 require 'socket'
 class Cadastro
   attr_accessor :dados
-  def initialize(servidor,name,em,pass,cp,ende,cas,cid,tel,ce)
+  def initialize(servidor,tipo,nombre,em,pass,cp,ende,cas,cid,tel,ce)
     @server = servidor
     @request = nil
     @response = nil
-    @dados = [name,em,pass,cp,ende,cas,cid,tel,ce]
+    @dados = [tipo,nombre,em,pass,cp,ende,cas,cid,tel,ce]
 
   end
 
   def enviaDados
-  @request = Thread.new do
-    loop{
-    @server.puts(@dados)
-    }
+    @server.puts(dados)
+    @server.close
   end
-  end
-
-
-
 end
+
+
 
 Shoes.app title: "Cadastro"  do
 
@@ -63,14 +59,12 @@ Shoes.app title: "Cadastro"  do
   end
   button "Cadastre-se" do
     if @nome.text != nil || @email.text != nil || @senha.text != nil|| @cpf.text!= nil|| @endereco.text != nil || @casa.text != nil || @cidade.text != nil || @telefone.text != nil || @cep.text != nil
-      name,em,pass,cp,ende,cas,cid,tel,ce = @nome.text,@email.text,@senha.text,@cpf.text,@ender.text,@casa.text,@cidade.text,@telefone.text,@cep.text
-      server = TCPSocket.open("192.168.0.11",3001)
-      @cadastro = Cadastro.new server, name,em,pass,cp,ende,cas,cid,tel,ce
+      nombre,em,pass,cp,ende,cas,cid,tel,ce = @nome.text,@email.text,@senha.text,@cpf.text,@ender.text,@casa.text,@cidade.text,@telefone.text,@cep.text
+      server = TCPSocket.open("localhost",3001)
+      @cadastro = Cadastro.new server,'Cadastro',nombre,em,pass,cp,ende,cas,cid,tel,ce
       @cadastro.enviaDados
-
       alert"Cadastro realizado com sucesso!"
-
-      require 'o'
+      require 'login'
       close
     else
       alert"Nao deixe os campos em branco"
