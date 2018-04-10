@@ -4,29 +4,33 @@ require 'csv'
 #encoding: ISO-8859-1
 
 class Login < Shoes::Widget
+  attr_accessor :server
   def initialize(servidor)
     @server = servidor
     @ip = nil
   end
 
   def enviaDados(tipo,email,senha)
-
     @ip = (Socket.ip_address_list)[1].ip_address
     @dados = [tipo,ip,email,senha]
+    @request = Thread.new do
     @server.puts @dados
-    @server.close
-  end
+    end
+    @request.join
+    end
 
   def ip
     @ip
   end
 
   def recebeDados
-    @response = Thread.new do
-        msg = @server.gets
-    end
-    @response.join
+        while msg =  @server.gets
+          arr << msg
+        end
+  end
 
+  def fecha
+    @server.close
   end
 end
 

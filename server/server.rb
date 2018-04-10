@@ -85,20 +85,20 @@ end
   def cadastro(client)
    arr = listen_user_messages client
    arr.each do |ar|
-     ar.gsub!("\n","")
+     ar.gsub!("\n",",")
    end
   armazena(arr[0].to_s,arr[1].to_s,arr[2].to_s,arr[3].to_s,arr[4].to_s,arr[5].to_s,arr[6].to_s,arr[7].to_s,arr[8].to_s)
   end
 
   def login(client)
     arr = listen_user_messages client
-    puts arr[0]
-    puts arr[1]
-    puts arr[2]
-
+    arr.each do |aray|
+      aray.gsub!("\n","")
+    end
+    p arr
     CSV.foreach("cadastrados.csv") do |row|
-      if (row[1] == arr[0]) && (row[2] == arr[1])
-        puts "sim"
+      if (row[1] == arr[1]) && (row[2] == arr[2])
+        puts "igual"
         #Cadastra os clientes na Hash para possível login
 =begin
         @clientes[arr[0].to_sym][:nome]=row[0] unless clientes[arr[0].to_sym]
@@ -111,15 +111,13 @@ end
         @clientes[arr[0].to_sym][:telefone]=row[7] unless clientes[arr[0].to_sym]
         @clientes[arr[0].to_sym][:cep]=row[8] unless clientes[arr[0].to_sym]
 =end
-        client.puts "0"
-        break
+        client.puts 0
+        return
       end
 
-
-
     end
-    puts "nao"
-    client.puts "1"+"\n"
+    client.puts 1
+    puts "n deu"
   end
 
 end
