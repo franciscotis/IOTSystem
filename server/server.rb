@@ -5,19 +5,23 @@ require 'resolv-replace'
 class Server
 
 def initialize(porta,ip)
-  @servidor = TCPServer.new(ip,porta)
+  @servidor = TCPServer.open(ip,porta)
   @conexoes = Hash.new
   @rooms = Hash.new
   @clientes = Hash.new
+  @metas  = Hash.new
+ # leituraMetas
   @udp = UDPSocket.new
-  @udp.bind(ip,porta)
+ @conexaoudp =  @udp.bind(ip,porta)
   run
 end
 
 
 def run
 loop{
-  Thread.start do
+=begin
+  Thread.start(@conexaoudp) do
+    puts "entrou udp"
   loop {
   data,client = @udp.recvfrom(1024)
   Thread.new(client) do |clientAddress|
@@ -26,13 +30,17 @@ loop{
   end
   }
   end
+=end
 
   Thread.start(@servidor.accept) do |client|
-
+    puts "entrou tcp"
+    loop {
     tipoOperacao = client.gets.chomp.to_sym
     puts tipoOperacao
     if tipoOperacao == :Cadastro
       cadastro client
+      client.close
+
     elsif tipoOperacao == :Login
       ip = client.gets.to_sym
       email = client.gets
@@ -41,8 +49,18 @@ loop{
     elsif tipoOperacao == :Cliente
       ip = client.gets.to_sym
       puts "clientelogin"
-    getDados ip,client
+      getDados ip,client
+      elsif tipoOperacao == :Meta
+      valor = client.gets
+      email = client.gets.to_sym
+      armazenaMetas valor, email
+    elsif tipoOperacao == :Dados
+      email = client.gets.to_sym
+    elsif tipoOperaecao == :Sair
+      client.close
+
     end
+    }
   end
 
 
@@ -52,13 +70,29 @@ loop{
 
 end
 
+def
+
+def leituraMetas
+  CSV.foreach("metas.csv") do |row|
+  unless row.nil?
+    @metas[(row[0]).to_sym] = Integer(row[1])
+  end
+  end
+end
+
+def armazenaMetas valor,email
+@metas[email] = valor
+  File.open("metas.csv","a") do |line|
+    line.puts "#{email},#{valor}"
+  end
+end
+
 def getDados ip,client
   email = @clientes[ip]
   CSV.foreach("cadastrados.csv") do |row|
     if row[1] == email
       row.each do |envio|
         client.puts envio
-        puts "ent"
       end
     end
   end
@@ -74,7 +108,7 @@ def printaSensor(nome,data)
   datah = DateTime.parse(datahora).strftime("%d%m%Y")
   FileUtils.mkdir_p "DadosUsuarios"
   FileUtils.mkdir_p "DadosUsuarios/#{nome.to_s}"
-  File.open("../server/DadosUsuarios/#{nome.to_s}/#{datah.to_s}.txt","a") do |line|
+  File.open("../server/DadosUsuarios/#{nome.to_s}/#{datah.to_s}.csv","a") do |line|
     line.puts "#{data.to_s},#{datahora.to_s} "
   end
 end
