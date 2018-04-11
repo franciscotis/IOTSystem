@@ -1,10 +1,11 @@
 require 'socket'
 require 'csv'
 require 'fileutils'
+require 'resolv-replace'
 class Server
 
 def initialize(porta,ip)
-  @servidor = TCPServer.open(ip,porta)
+  @servidor = TCPServer.new(ip,porta)
   @conexoes = Hash.new
   @rooms = Hash.new
   @clientes = Hash.new
@@ -16,7 +17,7 @@ end
 
 def run
 loop{
-  Thread.new do
+  Thread.start do
   loop {
   data,client = @udp.recvfrom(1024)
   Thread.new(client) do |clientAddress|
@@ -26,18 +27,21 @@ loop{
   }
   end
 
-
-
   Thread.start(@servidor.accept) do |client|
+
     tipoOperacao = client.gets.chomp.to_sym
     puts tipoOperacao
     if tipoOperacao == :Cadastro
-      puts 'entrei'
       cadastro client
     elsif tipoOperacao == :Login
-      login client
+      ip = client.gets.to_sym
+      email = client.gets
+      senha = client.gets
+      login client,ip,email,senha
     elsif tipoOperacao == :Cliente
-    loginCliente client
+      ip = client.gets.to_sym
+      puts "clientelogin"
+    getDados ip,client
     end
   end
 
@@ -45,6 +49,20 @@ loop{
 
 
 }.join
+
+end
+
+def getDados ip,client
+  email = @clientes[ip]
+  CSV.foreach("cadastrados.csv") do |row|
+    if row[1] == email
+      row.each do |envio|
+        client.puts envio
+        puts "ent"
+      end
+    end
+  end
+
 
 end
 
@@ -57,7 +75,7 @@ def printaSensor(nome,data)
   FileUtils.mkdir_p "DadosUsuarios"
   FileUtils.mkdir_p "DadosUsuarios/#{nome.to_s}"
   File.open("../server/DadosUsuarios/#{nome.to_s}/#{datah.to_s}.txt","a") do |line|
-    line.puts "Consumo >> #{data.to_s} m³/s || Hora >> #{datahora.to_s} "
+    line.puts "#{data.to_s},#{datahora.to_s} "
   end
 end
 
@@ -70,7 +88,6 @@ end
 
 def listen_user_messages(client)
   arr = Array.new
-  a = 0
   while line = client.gets
     arr << line
   end
@@ -90,37 +107,24 @@ end
   armazena(arr[0].to_s,arr[1].to_s,arr[2].to_s,arr[3].to_s,arr[4].to_s,arr[5].to_s,arr[6].to_s,arr[7].to_s,arr[8].to_s)
   end
 
-  def login(client)
-    arr = listen_user_messages client
-    arr.each do |aray|
-      aray.gsub!("\n","")
-    end
-    p arr
+  def login(client,ip,email,senha)
+    puts email.gsub!("\n","")
+    puts senha.gsub!("\n","")
     CSV.foreach("cadastrados.csv") do |row|
-      if (row[1] == arr[1]) && (row[2] == arr[2])
-        puts "igual"
-        #Cadastra os clientes na Hash para possível login
-=begin
-        @clientes[arr[0].to_sym][:nome]=row[0] unless clientes[arr[0].to_sym]
-        @clientes[arr[0].to_sym][:email]=row[1] unless clientes[arr[0].to_sym]
-        @clientes[arr[0].to_sym][:senha]=row[2] unless clientes[arr[0].to_sym]
-        @clientes[arr[0].to_sym][:cpf]=row[3] unless clientes[arr[0].to_sym]
-        @clientes[arr[0].to_sym][:endereco]=row[4] unless clientes[arr[0].to_sym]
-        @clientes[arr[0].to_sym][:casa]=row[5] unless clientes[arr[0].to_sym]
-        @clientes[arr[0].to_sym][:cidade]=row[6] unless clientes[arr[0].to_sym]
-        @clientes[arr[0].to_sym][:telefone]=row[7] unless clientes[arr[0].to_sym]
-        @clientes[arr[0].to_sym][:cep]=row[8] unless clientes[arr[0].to_sym]
-=end
+      if (row[1] == email) && (row[2] == senha)
+        @clientes[ip] = email
         client.puts 0
         return
       end
 
     end
     client.puts 1
-    puts "n deu"
   end
 
 end
 
 
-Server.new(3001,"192.168.25.5")
+Server.new(3001,"localhost")
+
+
+

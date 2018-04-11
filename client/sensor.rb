@@ -12,7 +12,7 @@ class Sensor
   def enviaDados()
       ip = (Socket.ip_address_list)[3].ip_address
       @dados = "#{ip.to_s},#{@vazaoAgua.to_s}"
-      @ds.send(@dados.to_s,0,"192.168.25.5",3001)
+      @ds.send(@dados.to_s,0,"localhost",3001)
       sleep tempo
   end
 

@@ -1,8 +1,9 @@
 require 'socket'
+require 'resolv-replace'
 #require 'green_shoes'
 #encoding: ISO-8859-1
 class Client < Shoes::Widget
-  attr_accessor :email, :nome, :cpf, :rg, :endereco, :cidade, :uf, :pais, :telefone, :celular, :cep
+  attr_accessor :email, :nome, :cpf, :rg, :endereco, :cidade, :uf, :pais, :telefone, :celular, :cep, :servidor
   def initialize(servidor,nome=nil,email=nil,senha=nil,cpf=nil,endereco=nil,casa=nil,cidade=nil,telefone=nil,cep=nil)
     @email = email
     @nome = nome
@@ -15,46 +16,39 @@ class Client < Shoes::Widget
     @servidor = servidor
 
   end
-=begin
-    def conexao(hostname, port)
-      server = TCPSocket.open(hostname,port)
-      server.puts 4
-      puts 'Valor enviado, esperando o seu dobro'
-      resp = server.recvfrom(10_000)
-      puts resp[0]
-      server.close
-    end
-=end
 
   def recebeDados
-    @response = Thread.new do
-      arr = Array.new
-       while msg = @server.gets
-         arr << msg
-       end
-    end
-    @nome=arr[0],@email=arr[1],@senha=arr[2],@cpf=arr[3],@endereco=arr[4],@cidade=arr[5],@telefone=arr[6],@cep=arr[7],@casa=arr[8]
+    @nome = server.gets
+    @email = server.gets
+    @senha = server.gets
+    @cpf = server.gets
+    @endereco = server.gets
+    @casa = server.gets
+    @cidade = server.gets
+    @telefone = server.gets
+    @cep = server.gets
   end
 
-  def enviaDados
-    @ip = (Socket.ip_address_list)[1].ip_address
-    @dados = ["Cliente",@ip]
-    @server.puts(@dados)
-    recebeDados
-    @server.close
+  def enviaDados tipo
+    @server.puts tipo
+    @server.puts getid.to_s
+  end
+
+  def getid
+    ip = Socket.ip_address_list.detect{|intf| intf.ipv4_private?}
+    ip.ip_address
   end
 
 
 end
+
 Shoes.app title: "Meu App de Agua" do
-  server = TCPSocket.open("192.168.137.155",3001)
-  @client = Client.new server
-  @client.enviaDados
+  server = TCPSocket.open("localhost",3001)
+  #@client = Client.new server
+  #@client.enviaDados "Cliente"
   stack do
     para "Meu Consumo"
     flow do
-      #Recebe o seu consumo de água - data e horario especifico do consumo
-      #Implementar. Necessita de Sensor + Servidor
     end
     para "Total Acumulado"
     flow do

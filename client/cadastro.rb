@@ -65,7 +65,6 @@ Shoes.app title: "Cadastro"  do
       server = TCPSocket.open("192.168.25.5",3001)
       @cadastro = Cadastro.new server,'Cadastro',nombre,em,pass,cp,ende,cas,cid,tel,ce
       @cadastro.enviaDados
-      @cadastrou =
       alert"Cadastro realizado com sucesso!"
       require 'login'
       close
