@@ -18,22 +18,22 @@ class Login < Shoes::Widget
 
   end
 
-  def getip
-    ip = Socket.ip_address_list.detect{|intf| intf.ipv4_private?}
-    ip.ip_address
-  end
-
   def ip
     @ip
+  end
+
+  def getip
+    ip = IPSocket.getaddress(Socket.gethostname)
   end
 
   def recebeDados
    resposta = @server.gets
   end
+
   end
 
 Shoes.app title: "Login" do
-  server = TCPSocket.open("localhost",3001)
+  server = TCPSocket.open("192.168.0.120",3001)
   @fazlogin = Login.new server
   stack(left:35, top:90) do
     para "E-mail"
@@ -54,8 +54,8 @@ Shoes.app title: "Login" do
     a = Integer(@fazlogin.recebeDados)
     if a.zero?
       @fazlogin.server.close
-      alert("Login realizado com sucesso!")
       require 'client'
+      alert("Login realizado com sucesso!")
       close
 
     else
@@ -65,6 +65,7 @@ Shoes.app title: "Login" do
 
 
   button "Cadastre-se" do
+    @fazlogin.server.close
     require 'cadastro'
     close
   end
