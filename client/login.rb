@@ -38,10 +38,10 @@ class Login < Shoes::Widget #Inicio da classe Login
   end
 
   def recebeDados
-   resposta = @server.gets #Método que recebe a resposta do servidor
+    resposta = @server.gets #Método que recebe a resposta do servidor
   end
 
-  end
+end
 
 #Interface gráfica
 Shoes.app title: "Login", :width => 500, :height => 400, :resizable => false do
@@ -56,7 +56,7 @@ Shoes.app title: "Login", :width => 500, :height => 400, :resizable => false do
     ip,porta = row[0],row[1] #coloco o resultado nas variáveis ip e porta
   end
   begin
-  server = TCPSocket.open(ip,porta) #Abro a conexão com o servidor no ip e na porta
+    server = TCPSocket.open(ip,porta) #Abro a conexão com o servidor no ip e na porta
   rescue
     alert "Não possível conectar com o servidor" #Caso não seja possível, irá alertar ao usuário
     require 'iot_system' #E o redirecionará para a página inicial
@@ -76,28 +76,28 @@ Shoes.app title: "Login", :width => 500, :height => 400, :resizable => false do
     end
     flow do
 
-    button "Entrar" do #Botão
-      email,senha = @login.text,@password.text #Pega os textos que o usuário digitou
-      @fazlogin.enviaDados "Login",email,senha #Envia os dados para o servidor, no qual irá responder 0 ou 1.
-      a = Integer(@fazlogin.recebeDados) #Recebe os dados do servidor
-      if a.zero? #Caso receba zero, significa que o usuário está cadastrado corretamente
-        @fazlogin.server.close #Fecha o servidor
-        require 'client' # Abre a página de cliente
-        alert("Login realizado com sucesso!") #Diz que o login foi feito com sucesso
-        close #Fecha a página
+      button "Entrar" do #Botão
+        email,senha = @login.text,@password.text #Pega os textos que o usuário digitou
+        @fazlogin.enviaDados "Login",email,senha #Envia os dados para o servidor, no qual irá responder 0 ou 1.
+        a = Integer(@fazlogin.recebeDados) #Recebe os dados do servidor
+        if a.zero? #Caso receba zero, significa que o usuário está cadastrado corretamente
+          @fazlogin.server.close #Fecha o servidor
+          require 'client' # Abre a página de cliente
+          alert("Login realizado com sucesso!") #Diz que o login foi feito com sucesso
+          close #Fecha a página
 
-      else #Caso contrário, alerta ao usuário
-        alert("Verifique se o e-mail e/ou a senha estao corretas ou se voce ja fez o cadastro!")
+        else #Caso contrário, alerta ao usuário
+          alert("Verifique se o e-mail e/ou a senha estao corretas ou se voce ja fez o cadastro!")
+        end
+      end
+
+
+      button "Cadastre-se" do # se o usuário quiser se cadastrar
+        @fazlogin.server.close #Fecha o servidor
+        require 'cadastro' #Abre a página de cadastro
+        close #Fecha a página
       end
     end
-
-
-    button "Cadastre-se" do # se o usuário quiser se cadastrar
-      @fazlogin.server.close #Fecha o servidor
-      require 'cadastro' #Abre a página de cadastro
-      close #Fecha a página
-    end
-end
   end
 
 end

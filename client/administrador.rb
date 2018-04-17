@@ -17,7 +17,7 @@ porta = ""
 CSV.foreach("endmaq.csv") do |row| #Pega o endereço ip do servidor e a porta que estão no arquivo csv
   ip,porta = row[0],row[1]
 end
-@servidor  = TCPSocket.open("192.168.0.101","3001") #Abre uma conexão TCP com o servidor
+@servidor  = TCPSocket.open("172.20.10.6","3001") #Abre uma conexão TCP com o servidor
 
 
 def dadosAdmin #Função que envia os dados para o servidor
@@ -87,4 +87,3 @@ loop do
 
 
 end
-
