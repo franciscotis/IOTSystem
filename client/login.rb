@@ -32,42 +32,57 @@ class Login < Shoes::Widget
 
   end
 
-Shoes.app title: "Login" do
-  server = TCPSocket.open("192.168.0.120",3001)
+Shoes.app title: "Login", :width => 500, :height => 400, :resizable => false do
+  style Shoes::Para, font: "MS UI Gothic"
+  style Shoes::Title, font: "Lucida Grande"
+  background('../img/videoblocks-bright-abstract-water-surface-glare-sun-blurred-background-loop_rizmureyow_thumbnail-small01.jpg')
+  ip = ""
+  porta = ""
+  CSV.foreach("endmaq.csv") do |row|
+    ip,porta = row[0],row[1]
+  end
+  begin
+  server = TCPSocket.open(ip,porta)
+  rescue
+    alert "Não possível conectar com o servidor"
+    require 'iot_system'
+    close
+  end
   @fazlogin = Login.new server
-  stack(left:35, top:90) do
+  title "LOGIN", :align=>'center', :margin_top => '10%'
+  stack(:margin_left => '50%', :left => '-25%', :margin_top => '30%') do
     para "E-mail"
     flow do
-      background black
       @login = edit_line
     end
     para "Senha"
     flow do
-      background red
-      @password = edit_line
+      @password = edit_line :secret => true
+    end
+    flow do
+
+    button "Entrar" do
+      email,senha = @login.text,@password.text
+      @fazlogin.enviaDados "Login",email,senha
+      a = Integer(@fazlogin.recebeDados)
+      if a.zero?
+        @fazlogin.server.close
+        require 'client'
+        alert("Login realizado com sucesso!")
+        close
+
+      else
+        alert("Verifique se o e-mail e/ou a senha estao corretas ou se voce ja fez o cadastro!")
+      end
     end
 
-  end
-  button "Entrar" do
-    email,senha = @login.text,@password.text
-    @fazlogin.enviaDados "Login",email,senha
-    a = Integer(@fazlogin.recebeDados)
-    if a.zero?
+
+    button "Cadastre-se" do
       @fazlogin.server.close
-      require 'client'
-      alert("Login realizado com sucesso!")
+      require 'cadastro'
       close
-
-    else
-      alert("Verifique se o e-mail e/ou a senha estao corretas ou se voce ja fez o cadastro!")
     end
-  end
-
-
-  button "Cadastre-se" do
-    @fazlogin.server.close
-    require 'cadastro'
-    close
+end
   end
 
 end

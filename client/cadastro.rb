@@ -20,9 +20,13 @@ end
 
 
 
-Shoes.app title: "Cadastro"  do
-
-  stack do
+Shoes.app title: "Cadastro",:width => 500, :height => 500, :resizable => false   do
+  style Shoes::Para, font: "MS UI Gothic"
+  style Shoes::Title, font: "Lucida Grande"
+  style Shoes::Button, font: "Andale Mono"
+  background "#99ffcc"..."#99ccff"
+  title "CADASTRO", :align=>'center', :margin_top => '5%'
+  stack(:margin_left => '50%', :left => '-25%', :margin_top => '14%') do
     para "Nome"
     flow do
       @nome = edit_line
@@ -59,22 +63,29 @@ Shoes.app title: "Cadastro"  do
     flow do
       @cep = edit_line
     end
-  end
-  button "Cadastre-se" do
-    if @nome.text != "" || @email.text != "" || @senha.text != ""|| @cpf.text!= ""|| @endereco.text != "" || @casa.text != "" || @cidade.text != "" || @telefone.text != "" || @cep.text != ""
-      nombre,em,pass,cp,ende,cas,cid,tel,ce = @nome.text,@email.text,@senha.text,@cpf.text,@ender.text,@casa.text,@cidade.text,@telefone.text,@cep.text
-      server = TCPSocket.open("192.168.0.120",3001)
-      @cadastro = Cadastro.new server,'Cadastro',nombre,em,pass,cp,ende,cas,cid,tel,ce
-      @cadastro.enviaDados
-      alert"Cadastro realizado com sucesso!"
-      @cadastro.server.close
-      require 'login'
-      close
-    else
-      alert"Nao deixe os campos em branco"
+    stack do
+    button "Cadastre-se", :margin_top => '18%' do
+      if @nome.text != "" || @email.text != "" || @senha.text != ""|| @cpf.text!= ""|| @endereco.text != "" || @casa.text != "" || @cidade.text != "" || @telefone.text != "" || @cep.text != ""
+        nombre,em,pass,cp,ende,cas,cid,tel,ce = @nome.text,@email.text,@senha.text,@cpf.text,@ender.text,@casa.text,@cidade.text,@telefone.text,@cep.text
+        ip = ""
+        porta = ""
+        CSV.foreach("endmaq.csv") do |row|
+          ip,porta = row[0],row[1]
+        end
+        server = TCPSocket.open(ip,porta)
+        @cadastro = Cadastro.new server,'Cadastro',nombre,em,pass,cp,ende,cas,cid,tel,ce
+        @cadastro.enviaDados
+        alert"Cadastro realizado com sucesso!"
+        @cadastro.server.close
+        require 'login'
+        close
+      else
+        alert"Nao deixe os campos em branco"
+      end
+
     end
-
-
+    end
   end
+
 
 end

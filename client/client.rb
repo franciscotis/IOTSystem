@@ -3,9 +3,10 @@ require 'socket'
 #require 'green_shoes'
 #encoding: ISO-8859-1
 class Client < Shoes::Widget
-  attr_accessor :email, :nome, :cpf, :rg, :endereco, :cidade, :uf, :pais, :telefone, :celular, :cep, :servidor, :casa, :meta, :consumo, :rec, :total
+  attr_accessor :email, :nome, :cpf, :rg, :endereco, :cidade, :uf, :pais, :telefone, :celular, :cep, :servidor, :casa, :meta, :consumo, :rec, :total, :id
 
-  def initialize(servidor, nome = nil, email = nil, senha = nil, cpf = nil, endereco = nil, casa = nil, cidade = nil, telefone = nil, cep = nil)
+  def initialize(servidor, nome = nil, email = nil, senha = nil, cpf = nil, endereco = nil, casa = nil, cidade = nil, telefone = nil, cep = nil, id=nil)
+    @id = id
     @email = email
     @nome = nome
     @cpf = cpf
@@ -21,7 +22,7 @@ class Client < Shoes::Widget
 
   end
 
-  def recebeDados
+  def recebeDados msg
     @nome = @servidor.gets
     @email = @servidor.gets
     @senha = @servidor.gets
@@ -31,9 +32,10 @@ class Client < Shoes::Widget
     @cidade = @servidor.gets
     @telefone = @servidor.gets
     @cep = @servidor.gets
-    m = @servidor.gets
-    if m!="não"
-      @meta = Integer(m)
+    @id = Integer(@servidor.gets)
+    m = Integer(@servidor.gets)
+    if m>=0
+      @meta = m
     end
 
   end
@@ -71,19 +73,29 @@ class Client < Shoes::Widget
 
 end
 
-Shoes.app title: "Meu App de Agua", :width => 500, :height => 500, :resizable => false do
-  server = TCPSocket.open("192.168.0.120", 3001)
+Shoes.app title: "Meu App de Agua", :width => 500, :height => 600, :resizable => false do
+  style Shoes::Para, font: "MS UI Gothic"
+  style Shoes::Title, font: "MS UI Gothic"
+  background "#ccff99"..."#99ffcc"
+  ip = ""
+  porta = ""
+  CSV.foreach("endmaq.csv") do |row|
+    ip = row[0]
+    porta = row[1]
+  end
+  server = TCPSocket.open(ip,porta)
   @clickCons = false
   @client = Client.new server
   @cons = ""
   @client.enviaDados "Cliente"
-  @client.recebeDados
+  @client.recebeDados self
 
-
-  stack do
+  title "Meu App de Água", :align=>'center', :margin_top => '5%'
+  stack(:margin_left => '30%', :left => '-25%', :margin_top => '15%') do
     stack do
-      title "Meu Consumo"
-      stack :width => "400px", :height => "70px", :scroll => true do
+      para  strong "Meu Consumo"
+
+      stack :margin_left => '3%', :width => "400px", :height => "70px", :scroll => true do
         @consumo = para "Seu consumo irá aparecer aqui!"
       end
 
@@ -112,7 +124,7 @@ Shoes.app title: "Meu App de Agua", :width => 500, :height => 500, :resizable =>
 
     end
     @clickTot = false
-    para "Total Acumulado"
+    para  strong "Total Acumulado"
     @client.enviaDados "Total"
     @total = para "Seu consumo total irá aparecer aqui!"
     button "Verificar Total" do
@@ -131,12 +143,12 @@ Shoes.app title: "Meu App de Agua", :width => 500, :height => 500, :resizable =>
 
     end
     @client.enviaDados "Dados"
-    para "Minha meta de Consumo"
+    para  strong "Minha meta de Consumo"
     flow do
       inscription "Coloque aqui a sua meta de consumo para quando voce consumir esse valor, voce ser notificado!"
       @goal = title strong("#{@client.meta}")
       para "m³"
-      stack(:margin_left => '40%', :left => '-3%') do
+      stack(:margin_left => '95%', :left => '-3%', :margin_top =>'10%') do
 
         button "+" do
           @client.meta += 1
@@ -155,26 +167,29 @@ Shoes.app title: "Meu App de Agua", :width => 500, :height => 500, :resizable =>
         @client.enviaDados "Meta"
       end
     end
-    para "Meus Dados"
-    stack :width => "250px", :height => "100px", :scroll => true do
-      para "E-mail cadastrado"
+
+    para strong "Meus Dados"
+    flow :margin=> 10 do
+    stack :width => "200px", :height => "90px", :scroll => true do
+      para strong "E-mail cadastrado"
       inscription @client.email.gsub("\n","")
-      para "Nome do cliente"
+      para strong "Nome do cliente"
       inscription @client.nome.gsub("\n","")
-      para "CPF do cliente"
+      para strong "CPF do cliente"
       inscription @client.cpf.gsub("\n","")
-      para "Endereco do cliente"
+      para strong "Endereco do cliente"
       inscription @client.endereco.gsub("\n","")
-      para "Cidade do cliente"
+      para strong "Cidade do cliente"
       inscription @client.cidade.gsub("\n","")
-      para "Telefone do cliente"
+      para strong "Telefone do cliente"
       inscription @client.telefone.gsub("\n","")
-      para "Cep do cliente"
+      para strong "Cep do cliente"
       inscription @client.cep.gsub("\n","")
-      para "Numero da casa"
+      para strong "Numero da casa"
       inscription @client.casa.gsub("\n","")
     end
 
+end
   end
 
 end
