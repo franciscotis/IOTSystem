@@ -39,6 +39,4 @@ Iniciar o SHOES e abrir o arquivo iot_system.rb
  
  
  ## AUTHOR
- Francisco Pereira
- 
- (franncisco.p@gmail.com)
+ [Francisco Pereira](franncisco.p@gmail.com)
