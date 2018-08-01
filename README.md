@@ -4,6 +4,7 @@ Client-Server application made with Ruby.
 
 ## O que é necessário para o funcionamento
  Baixar o [Shoes](http://shoesrb.com/downloads/)
+ 
  Instalar o [Ruby](https://www.ruby-lang.org/en/downloads/)
 
 ## Configurações iniciais
